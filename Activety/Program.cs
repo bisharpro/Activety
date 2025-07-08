@@ -111,6 +111,10 @@ namespace project21
             Console.WriteLine($"ID: {id}");
             Console.WriteLine($"Correct Answers: {correct}");
             Console.WriteLine($"Incorrect Answers: {wrong}");
+
+
+
+
             Console.WriteLine($"Score Percentage: {percentage}%");
             Console.WriteLine("===================================");
 
