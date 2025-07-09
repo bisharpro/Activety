@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace project21
 {
@@ -10,12 +7,25 @@ namespace project21
     {
         static void Main(string[] args)
         {
+            string name;
+            Regex namePattern = new Regex("^[a-zA-Z\\s]+$");
 
-            Console.Write("Enter your name: ");
-            string name = Console.ReadLine();
+            do
+            {
+                Console.Write("Enter your name: ");
+                name = Console.ReadLine();
 
-            Console.Write("Enter your ID: ");
-            string id = Console.ReadLine();
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    Console.WriteLine("❌ Name cannot be empty. Please try again.");
+                }
+                else if (!namePattern.IsMatch(name))
+                {
+                    Console.WriteLine("❌ Please enter your name using letters only (A–Z).");
+                    name = null;
+                }
+
+            } while (string.IsNullOrWhiteSpace(name));
 
             Console.WriteLine("\nChoose the operation for all 10 questions:");
             Console.WriteLine("1: Addition");
@@ -33,58 +43,35 @@ namespace project21
                 return;
             }
 
-            Random rand = new Random();
-            int correct = 0;
-            int wrong = 0;
-            string operationName = "";
-
-            switch (chosenOperation)
+            string operationName = chosenOperation switch
             {
-                case 1:
-                    operationName = "Addition";
-                    break;
-                case 2:
-                    operationName = "Multiplication";
-                    break;
-                case 3:
-                    operationName = "Subtraction";
-                    break;
-                case 4:
-                    operationName = "Division";
-                    break;
-            }
+                1 => "Addition",
+                2 => "Multiplication",
+                3 => "Subtraction",
+                4 => "Division",
+                _ => ""
+            };
+
+            int correct = 0, wrong = 0;
 
             for (int i = 1; i <= 10; i++)
             {
-                int a = rand.Next(1, 21);
-                int b = rand.Next(1, 21);
-                int answer = 0;
+                int a = 0, b = 0, answer = 0;
                 string question = "";
 
-                // Create question based on chosen operation
                 switch (chosenOperation)
                 {
-                    case 1: // Addition
-                        answer = a + b;
-                        question = $"{a} + {b}";
+                    case 1:
+                        (a, b, answer, question) = GenerateAddition();
                         break;
-                    case 2: // Multiplication
-                        answer = a * b;
-                        question = $"{a} * {b}";
+                    case 2:
+                        (a, b, answer, question) = GenerateMultiplication();
                         break;
-                    case 3: // Subtraction
-                        if (a < b) (a, b) = (b, a);
-                        answer = a - b;
-                        question = $"{a} - {b}";
+                    case 3:
+                        (a, b, answer, question) = GenerateSubtraction();
                         break;
-                    case 4: // Division
-                        while (a % b != 0)
-                        {
-                            a = rand.Next(1, 21);
-                            b = rand.Next(1, 20) + 1;
-                        }
-                        answer = a / b;
-                        question = $"{a} / {b}";
+                    case 4:
+                        (a, b, answer, question) = GenerateDivision();
                         break;
                 }
 
@@ -105,20 +92,58 @@ namespace project21
             }
 
             double percentage = (correct / 10.0) * 100;
-
             Console.WriteLine("\n========== FINAL RESULT ==========");
-            Console.WriteLine($"Name: {name}");
-            Console.WriteLine($"ID: {id}");
-            Console.WriteLine($"Correct Answers: {correct}");
-            Console.WriteLine($"Incorrect Answers: {wrong}");
+            Console.WriteLine($"Name: {name}\tCorrect Answers: {correct}\tIncorrect Answers: {wrong}\tScore Percentage: {percentage}%");
+        }
 
+        // 🧮 Method for Addition
+        static (int, int, int, string) GenerateAddition()
+        {
+            Random rand = new Random();
+            int a = rand.Next(5, 12);
+            int b = rand.Next(6, 21);
+            int answer = a + b;
+            string question = $"{a} + {b}";
+            return (a, b, answer, question);
+        }
 
+        // 🧮 Method for Multiplication
+        static (int, int, int, string) GenerateMultiplication()
+        {
+            Random rand = new Random();
+            int a = rand.Next(5, 12);
+            int b = rand.Next(6, 21);
+            int answer = a * b;
+            string question = $"{a} * {b}";
+            return (a, b, answer, question);
+        }
 
+        // 🧮 Method for Subtraction
+        static (int, int, int, string) GenerateSubtraction()
+        {
+            Random rand = new Random();
+            int a = rand.Next(5, 12);
+            int b = rand.Next(6, 21);
+            if (a < b) (a, b) = (b, a);
+            int answer = a - b;
+            string question = $"{a} - {b}";
+            return (a, b, answer, question);
+        }
 
-            Console.WriteLine($"Score Percentage: {percentage}%");
-            Console.WriteLine("===================================");
+        // 🧮 Method for Division
+        static (int, int, int, string) GenerateDivision()
+        {
+            Random rand = new Random();
+            int a, b;
+            do
+            {
+                a = rand.Next(4, 28);
+                b = rand.Next(1, 20) + 1;
+            } while (a % b != 0);
 
-
+            int answer = a / b;
+            string question = $"{a} / {b}";
+            return (a, b, answer, question);
         }
     }
 }
